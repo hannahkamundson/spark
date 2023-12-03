@@ -139,6 +139,12 @@ private[spark] object Config extends Logging {
       .version("2.3.0")
       .fallbackConf(CONTAINER_IMAGE)
 
+  val WATCHER_CONTAINER_IMAGE =
+    ConfigBuilder("spark.kubernetes.watcher.container.image")
+      .doc("Container image to use for the watchers.")
+      .version("2.3.0")
+      .fallbackConf(CONTAINER_IMAGE)
+
   val CONTAINER_IMAGE_PULL_POLICY =
     ConfigBuilder("spark.kubernetes.container.image.pullPolicy")
       .doc("Kubernetes image pull policy. Valid values are Always, Never, and IfNotPresent.")

@@ -206,6 +206,7 @@ object SparkEnv extends Logging {
 
   private[spark] val driverSystemName = "sparkDriver"
   private[spark] val executorSystemName = "sparkExecutor"
+  private[spark] val watcherSystemName = "sparkWatcher"
 
   def set(e: SparkEnv): Unit = {
     env = e
@@ -310,6 +311,7 @@ object SparkEnv extends Logging {
     // scalastyle:on argcount
 
     val isDriver = executorId == SparkContext.DRIVER_IDENTIFIER
+    val isWatcher = executorId == SparkContext.WATCHER_IDENTIFIER
 
     // Listener bus is only used on the driver
     if (isDriver) {
@@ -328,7 +330,14 @@ object SparkEnv extends Logging {
       }
     }
 
-    val systemName = if (isDriver) driverSystemName else executorSystemName
+    val systemName = {
+      if (isDriver) 
+        driverSystemName 
+      else if (isWatcher) 
+        watcherSystemName 
+      else
+        executorSystemName
+    }
     val rpcEnv = RpcEnv.create(systemName, bindAddress, advertiseAddress, port.getOrElse(-1), conf,
       securityManager, numUsableCores, !isDriver)
 
@@ -348,6 +357,9 @@ object SparkEnv extends Logging {
         name: String, endpointCreator: => RpcEndpoint):
       RpcEndpointRef = {
       if (isDriver) {
+        logInfo("Registering " + name)
+        rpcEnv.setupEndpoint(name, endpointCreator)
+      else if (isWatcher) {
         logInfo("Registering " + name)
         rpcEnv.setupEndpoint(name, endpointCreator)
       } else {

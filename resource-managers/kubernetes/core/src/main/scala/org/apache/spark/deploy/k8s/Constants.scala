@@ -27,6 +27,7 @@ private[spark] object Constants {
   val SPARK_ROLE_LABEL = "spark-role"
   val SPARK_POD_DRIVER_ROLE = "driver"
   val SPARK_POD_EXECUTOR_ROLE = "executor"
+  val SPARK_POD_WATCHER_ROLE = "watcher"
   val SPARK_EXECUTOR_INACTIVE_LABEL = "spark-exec-inactive"
 
   // Credentials secrets
@@ -49,13 +50,17 @@ private[spark] object Constants {
   // Default and fixed ports
   val DEFAULT_DRIVER_PORT = 7078
   val DEFAULT_BLOCKMANAGER_PORT = 7079
+  val DEFAULT_WATCHER_PORT = 7080
   val DRIVER_PORT_NAME = "driver-rpc-port"
   val BLOCK_MANAGER_PORT_NAME = "blockmanager"
+  val WATCHER_PORT_NAME = "watcher-rpc-port"
   val UI_PORT_NAME = "spark-ui"
 
   // Environment Variables
   val ENV_DRIVER_POD_IP = "SPARK_DRIVER_POD_IP"
+  val ENV_WATCHER_POD_IP = "SPARK_WATCHER_POD_IP"
   val ENV_DRIVER_URL = "SPARK_DRIVER_URL"
+  val ENV_WATCHER_URL = "SPARK_WATCHER_URL"
   val ENV_EXECUTOR_CORES = "SPARK_EXECUTOR_CORES"
   val ENV_EXECUTOR_MEMORY = "SPARK_EXECUTOR_MEMORY"
   val ENV_EXECUTOR_DIRS = "SPARK_EXECUTOR_DIRS"
@@ -66,12 +71,14 @@ private[spark] object Constants {
   val ENV_JAVA_OPT_PREFIX = "SPARK_JAVA_OPT_"
   val ENV_CLASSPATH = "SPARK_CLASSPATH"
   val ENV_DRIVER_BIND_ADDRESS = "SPARK_DRIVER_BIND_ADDRESS"
+  val ENV_WATCHER_BIND_ADDRESS = "SPARK_WATCHER_BIND_ADDRESS"
   val ENV_SPARK_CONF_DIR = "SPARK_CONF_DIR"
   val ENV_SPARK_USER = "SPARK_USER"
   val ENV_RESOURCE_PROFILE_ID = "SPARK_RESOURCE_PROFILE_ID"
   // Spark app configs for containers
   val SPARK_CONF_VOLUME_DRIVER = "spark-conf-volume-driver"
   val SPARK_CONF_VOLUME_EXEC = "spark-conf-volume-exec"
+  val SPARK_CONF_VOLUME_WATCHER = "spark-conf-colume-watcher"
   val SPARK_CONF_DIR_INTERNAL = "/opt/spark/conf"
   val SPARK_CONF_FILE_NAME = "spark.properties"
   val SPARK_CONF_PATH = s"$SPARK_CONF_DIR_INTERNAL/$SPARK_CONF_FILE_NAME"
@@ -92,6 +99,7 @@ private[spark] object Constants {
   val KUBERNETES_MASTER_INTERNAL_URL = "https://kubernetes.default.svc"
   val DEFAULT_DRIVER_CONTAINER_NAME = "spark-kubernetes-driver"
   val DEFAULT_EXECUTOR_CONTAINER_NAME = "spark-kubernetes-executor"
+  val DEFAULT_WATCHER_CONTAINER_NAME = "spark-kubernetes-watcher"
   val NON_JVM_MEMORY_OVERHEAD_FACTOR = 0.4d
 
   // Hadoop Configuration
