@@ -17,11 +17,9 @@
 package org.apache.spark.scheduler.cluster.k8s
 
 import java.io.File
-
 import io.fabric8.kubernetes.client.Config
 import io.fabric8.kubernetes.client.KubernetesClient
-
-import org.apache.spark.{SparkConf, SparkContext, SparkMasterRegex}
+import org.apache.spark.{SparkConf, SparkContext, SparkException, SparkMasterRegex}
 import org.apache.spark.deploy.k8s.{KubernetesConf, KubernetesUtils, SparkKubernetesClientFactory}
 import org.apache.spark.deploy.k8s.Config._
 import org.apache.spark.deploy.k8s.Constants.DEFAULT_EXECUTOR_CONTAINER_NAME
@@ -74,9 +72,10 @@ private[spark] class KubernetesClusterManager extends ExternalClusterManager wit
     val (authConfPrefix,
       apiServerUri,
       defaultServiceAccountCaCrt) = if (wasSparkSubmittedInClusterMode) {
-      require(sc.conf.get(KUBERNETES_DRIVER_POD_NAME).isDefined,
-        "If the application is deployed using spark-submit in cluster mode, the driver pod name " +
-          "must be provided.")
+      SparkException.require(
+        requirement = sc.conf.get(KUBERNETES_DRIVER_POD_NAME).isDefined,
+        errorClass = "K8S_CONFIG.DRIVER_POD_NAME_REQUIRED",
+        messageParameters = Map.empty)
       val serviceAccountCaCrt =
         Some(new File(Config.KUBERNETES_SERVICE_ACCOUNT_CA_CRT_PATH)).filter(_.exists)
       (KUBERNETES_AUTH_DRIVER_MOUNTED_CONF_PREFIX,

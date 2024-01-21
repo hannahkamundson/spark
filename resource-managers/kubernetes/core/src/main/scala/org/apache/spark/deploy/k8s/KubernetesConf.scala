@@ -17,11 +17,9 @@
 package org.apache.spark.deploy.k8s
 
 import java.util.{Locale, UUID}
-
 import io.fabric8.kubernetes.api.model.{LocalObjectReference, LocalObjectReferenceBuilder, Pod}
 import org.apache.commons.lang3.StringUtils
-
-import org.apache.spark.{SPARK_VERSION, SparkConf}
+import org.apache.spark.{SPARK_VERSION, SparkConf, SparkException}
 import org.apache.spark.deploy.k8s.Config._
 import org.apache.spark.deploy.k8s.Constants._
 import org.apache.spark.deploy.k8s.submit._
@@ -103,9 +101,10 @@ private[spark] class KubernetesDriverConf(
       sparkConf, KUBERNETES_DRIVER_LABEL_PREFIX)
 
     presetLabels.keys.foreach { key =>
-      require(
-        !driverCustomLabels.contains(key),
-        s"Label with key $key is not allowed as it is reserved for Spark bookkeeping operations.")
+      SparkException.require(
+        requirement = !driverCustomLabels.contains(key),
+        errorClass = "K8S_CONFIG.DRIVER_LABEL_NOT_ALLOWED",
+        messageParameters = Map("key" -> key))
     }
 
     driverCustomLabels ++ presetLabels
@@ -176,9 +175,10 @@ private[spark] class KubernetesExecutorConf(
       sparkConf, KUBERNETES_EXECUTOR_LABEL_PREFIX)
 
     presetLabels.keys.foreach { key =>
-      require(
-        !executorCustomLabels.contains(key),
-        s"Custom executor labels cannot contain $key as it is reserved for Spark.")
+      SparkException.require(
+        requirement = !executorCustomLabels.contains(key),
+        errorClass = "K8S_CONFIG.EXECUTOR_LABEL_NOT_ALLOWED",
+        messageParameters = Map("key" -> key))
     }
 
     executorCustomLabels ++ presetLabels

@@ -20,12 +20,10 @@ import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 import scala.util.control.Breaks._
 import scala.util.control.NonFatal
-
 import io.fabric8.kubernetes.api.model._
 import io.fabric8.kubernetes.client.{KubernetesClient, Watch}
 import io.fabric8.kubernetes.client.Watcher.Action
-
-import org.apache.spark.SparkConf
+import org.apache.spark.{SparkConf, SparkException}
 import org.apache.spark.deploy.SparkApplication
 import org.apache.spark.deploy.k8s._
 import org.apache.spark.deploy.k8s.Config._
@@ -73,7 +71,13 @@ private[spark] object ClientArguments {
         throw new RuntimeException(s"Unknown arguments: $invalid")
     }
 
-    require(mainClass.isDefined, "Main class must be specified via --main-class")
+    SparkException.require(
+      requirement = mainClass.isDefined,
+      errorClass = "CLI_PARAM_MUST_BE_SPECIFIED",
+      messageParameters = Map(
+        "prettyName" -> "Main class",
+        "command" -> "--main-class"
+      ))
 
     ClientArguments(
       mainAppResource,

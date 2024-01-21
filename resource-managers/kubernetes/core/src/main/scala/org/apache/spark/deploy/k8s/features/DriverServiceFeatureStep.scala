@@ -17,13 +17,12 @@
 package org.apache.spark.deploy.k8s.features
 
 import scala.jdk.CollectionConverters._
-
 import io.fabric8.kubernetes.api.model.{HasMetadata, ServiceBuilder}
-
+import org.apache.spark.SparkException
 import org.apache.spark.deploy.k8s.{KubernetesDriverConf, KubernetesUtils, SparkPod}
 import org.apache.spark.deploy.k8s.Config.{KUBERNETES_DNS_LABEL_NAME_MAX_LENGTH, KUBERNETES_DRIVER_SERVICE_IP_FAMILIES, KUBERNETES_DRIVER_SERVICE_IP_FAMILY_POLICY}
 import org.apache.spark.deploy.k8s.Constants._
-import org.apache.spark.internal.{config, Logging}
+import org.apache.spark.internal.{Logging, config}
 import org.apache.spark.util.{Clock, SystemClock}
 
 private[spark] class DriverServiceFeatureStep(
@@ -32,12 +31,16 @@ private[spark] class DriverServiceFeatureStep(
   extends KubernetesFeatureConfigStep with Logging {
   import DriverServiceFeatureStep._
 
-  require(kubernetesConf.getOption(DRIVER_BIND_ADDRESS_KEY).isEmpty,
-    s"$DRIVER_BIND_ADDRESS_KEY is not supported in Kubernetes mode, as the driver's bind " +
-      "address is managed and set to the driver pod's IP address.")
-  require(kubernetesConf.getOption(DRIVER_HOST_KEY).isEmpty,
-    s"$DRIVER_HOST_KEY is not supported in Kubernetes mode, as the driver's hostname will be " +
-      "managed via a Kubernetes service.")
+  SparkException.require(
+    requirement = kubernetesConf.getOption(DRIVER_BIND_ADDRESS_KEY).isEmpty,
+    errorClass = "K8S_CONFIG.DRIVER_BIND_ADDRESS_KEY_MUST_BE_EMPTY",
+    messageParameters = Map(
+      "key" -> DRIVER_BIND_ADDRESS_KEY))
+  SparkException.require(
+    requirement = kubernetesConf.getOption(DRIVER_HOST_KEY).isEmpty,
+    errorClass = "K8S_CONFIG.DRIVER_HOST_KEY_MUST_BE_EMPTY",
+    messageParameters = Map(
+      "key" -> DRIVER_HOST_KEY))
 
   private val preferredServiceName = s"${kubernetesConf.resourceNamePrefix}$DRIVER_SVC_POSTFIX"
   private val resolvedServiceName = if (preferredServiceName.length <= MAX_SERVICE_NAME_LENGTH) {

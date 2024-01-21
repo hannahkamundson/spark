@@ -17,12 +17,10 @@
 package org.apache.spark.scheduler.cluster.k8s
 
 import java.io.Closeable
-
 import io.fabric8.kubernetes.api.model.Pod
 import io.fabric8.kubernetes.client.{KubernetesClient, Watcher, WatcherException}
 import io.fabric8.kubernetes.client.Watcher.Action
-
-import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.spark.{SparkConf, SparkContext, SparkException}
 import org.apache.spark.annotation.{DeveloperApi, Since, Stable}
 import org.apache.spark.deploy.k8s.Config.KUBERNETES_EXECUTOR_ENABLE_API_WATCHER
 import org.apache.spark.deploy.k8s.Config.KUBERNETES_NAMESPACE
@@ -57,7 +55,11 @@ class ExecutorPodsWatchSnapshotSource(
   @Since("3.1.3")
   def start(applicationId: String): Unit = {
     if (enableWatching) {
-      require(watchConnection == null, "Cannot start the watcher twice.")
+      SparkException.require(
+        requirement = watchConnection == null,
+        errorClass = "ONLY_ONE_START_ALLOWED",
+        messageParameters = Map("service" -> "watcher"))
+
       logDebug(s"Starting to watch for pods with labels $SPARK_APP_ID_LABEL=$applicationId," +
         s" $SPARK_ROLE_LABEL=$SPARK_POD_EXECUTOR_ROLE.")
       watchConnection = kubernetesClient.pods()

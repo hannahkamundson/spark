@@ -17,7 +17,7 @@
 
 package org.apache.spark.shuffle
 
-import org.apache.spark.SparkConf
+import org.apache.spark.{SparkConf, SparkException}
 import org.apache.spark.deploy.k8s.Config.KUBERNETES_DRIVER_REUSE_PVC
 import org.apache.spark.shuffle.api.{ShuffleDataIO, ShuffleDriverComponents, ShuffleExecutorComponents}
 import org.apache.spark.shuffle.sort.io.LocalDiskShuffleDriverComponents
@@ -26,7 +26,10 @@ import org.apache.spark.shuffle.sort.io.LocalDiskShuffleDriverComponents
  * This should be used with ephemeral PVCs in K8s environment.
  */
 class KubernetesLocalDiskShuffleDataIO(sparkConf: SparkConf) extends ShuffleDataIO {
-  require(sparkConf.get(KUBERNETES_DRIVER_REUSE_PVC), "Ephemeral PVCs are required")
+  SparkException.require(
+    requirement = sparkConf.get(KUBERNETES_DRIVER_REUSE_PVC),
+    errorClass = "K8S_CONFIG.EPHEMERAL_PVC_REQUIRED",
+    messageParameters = Map.empty)
 
   override def driver(): ShuffleDriverComponents =
     new LocalDiskShuffleDriverComponents()

@@ -17,9 +17,8 @@
 package org.apache.spark.deploy.k8s.features
 
 import scala.jdk.CollectionConverters._
-
 import io.fabric8.kubernetes.api.model.{ContainerBuilder, EnvVarBuilder}
-
+import org.apache.spark.SparkException
 import org.apache.spark.deploy.k8s.{KubernetesConf, SparkPod}
 
 private[spark] class EnvSecretsFeatureStep(kubernetesConf: KubernetesConf)
@@ -30,7 +29,10 @@ private[spark] class EnvSecretsFeatureStep(kubernetesConf: KubernetesConf)
       .map{ case (envName, keyRef) =>
         // Keyref parts
         val keyRefParts = keyRef.split(":")
-        require(keyRefParts.size == 2, "SecretKeyRef must be in the form name:key.")
+        SparkException.require(
+          requirement = keyRefParts.size == 2,
+          errorClass = "K8S_CONFIG.SECRET_KEY_REF_PREFIX_FORMAT",
+          messageParameters = Map("actual" -> keyRef))
         val name = keyRefParts(0)
         val key = keyRefParts(1)
         new EnvVarBuilder()

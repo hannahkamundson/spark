@@ -18,12 +18,10 @@ package org.apache.spark.deploy.k8s.features
 
 import java.io.File
 import java.nio.charset.StandardCharsets
-
 import scala.jdk.CollectionConverters._
-
 import com.google.common.io.{BaseEncoding, Files}
 import io.fabric8.kubernetes.api.model.{ContainerBuilder, HasMetadata, PodBuilder, Secret, SecretBuilder}
-
+import org.apache.spark.SparkException
 import org.apache.spark.deploy.k8s.{KubernetesConf, SparkPod}
 import org.apache.spark.deploy.k8s.Config._
 import org.apache.spark.deploy.k8s.Constants._
@@ -151,8 +149,13 @@ private[spark] class DriverKubernetesCredentialsFeatureStep(kubernetesConf: Kube
     kubernetesConf.getOption(conf)
       .map(new File(_))
       .map { file =>
-        require(file.isFile, String.format("%s provided at %s does not exist or is not a file.",
-          fileType, file.getAbsolutePath))
+        SparkException.require(
+          requirement = file.isFile,
+          errorClass = "FILE_DOES_NOT_EXIST",
+          messageParameters = Map(
+            "fileType" -> fileType,
+            "absolutePath" -> file.getAbsolutePath
+          ))
         BaseEncoding.base64().encode(Files.toByteArray(file))
       }
   }

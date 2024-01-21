@@ -46,8 +46,11 @@ private[spark] class BasicExecutorFeatureStep(
     .sparkConf
     .getInt(BLOCK_MANAGER_PORT.key, DEFAULT_BLOCKMANAGER_PORT)
 
-  require(blockManagerPort == 0 || (1024 <= blockManagerPort && blockManagerPort < 65536),
-    "port number must be 0 or in [1024, 65535]")
+  SparkException.require(
+    requirement = blockManagerPort == 0 || (1024 <= blockManagerPort && blockManagerPort < 65536),
+    errorClass = "K8S_CONFIG.BLOCK_MANAGER_PORT_RANGE",
+    messageParameters = Map(
+      "actual" -> s"$blockManagerPort"))
 
   private val executorPodNamePrefix = kubernetesConf.resourceNamePrefix
 

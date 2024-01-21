@@ -439,6 +439,11 @@
     ],
     "sqlState" : "0A000"
   },
+  "CLI_PARAM_MUST_BE_SPECIFIED" : {
+    "message" : [
+      "<prettyName> must be specified via the command <command>."
+    ]
+  },
   "CODEC_NOT_AVAILABLE" : {
     "message" : [
       "The codec <codecName> is not available. Consider to set the config <configKey> to <configVal>."
@@ -1253,6 +1258,11 @@
       "No such struct field <fieldName> in <fields>."
     ],
     "sqlState" : "42704"
+  },
+  "FILE_DOES_NOT_EXIST" : {
+    "message" : [
+      "The file <fileType> provided at <absolutePath> does not exist or is not a file."
+    ]
   },
   "FORBIDDEN_OPERATION" : {
     "message" : [
@@ -2574,6 +2584,58 @@
     ],
     "sqlState" : "42K0E"
   },
+  "K8S_CONFIG" : {
+    "message" : [
+      "The Kubernetes configuration is not supported."
+    ],
+    "subClass" : {
+      "BLOCK_MANAGER_PORT_RANGE" : {
+        "message" : [
+          "The port number must be 0 or in [1024, 65535] but was <actual>."
+        ]
+      },
+      "DRIVER_BIND_ADDRESS_KEY_MUST_BE_EMPTY" : {
+        "message" : [
+          "<key> is not supported in Kubernetes mode, as the driver's bind address is managed and set to the driver pod's IP address."
+        ]
+      },
+      "DRIVER_POD_NAME_REQUIRED" : {
+        "message" : [
+          "If the application is deployed using spark-submit in cluster mode, the driver pod name must be provided."
+        ]
+      },
+      "DRIVER_HOST_KEY_MUST_BE_EMPTY" : {
+        "message" : [
+          "<key> is not supported in Kubernetes mode, as the driver's hostname will be \" +\n      \"managed via a Kubernetes service."
+        ]
+      },
+      "DRIVER_LABEL_NOT_ALLOWED" : {
+        "message" : [
+          "Driver label with key <key> is not allowed as it is reserved for Spark bookkeeping operations."
+        ]
+      },
+      "EPHEMERAL_PVC_REQUIRED" : {
+        "message" : [
+          "Ephemeral PVCs are required."
+        ]
+      },
+      "EXECUTOR_LABEL_NOT_ALLOWED" : {
+        "message" : [
+          "Custom executor labels cannot contain <key> as it is reserved for Spark."
+        ]
+      },
+      "SECRET_KEY_REF_PREFIX_FORMAT" : {
+        "message" : [
+          "SecretKeyRef must be in the form name:key but was <actual>."
+        ]
+      },
+      "VOLUMES_PREFIX_DUPLICATE" : {
+        "message" : [
+          "Found duplicated mountPath: <actual>."
+        ]
+      }
+    }
+  },
   "KRYO_BUFFER_OVERFLOW" : {
     "message" : [
       "Kryo serialization failed: <exceptionMsg>. To avoid this, increase \"<bufferSizeConfKey>\" value."
@@ -2944,6 +3006,11 @@
       "Function name: <funcName>; number of aliases: <aliasesNum>; number of output columns: <outColsNum>."
     ],
     "sqlState" : "42826"
+  },
+  "ONLY_ONE_START_ALLOWED" : {
+    "message" : [
+      "Cannot start the <service> more than once."
+    ]
   },
   "OPERATION_CANCELED" : {
     "message" : [

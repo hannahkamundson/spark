@@ -18,9 +18,8 @@ package org.apache.spark.deploy.k8s.features
 
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
-
 import io.fabric8.kubernetes.api.model._
-
+import org.apache.spark.SparkException
 import org.apache.spark.deploy.k8s._
 import org.apache.spark.deploy.k8s.Constants.{ENV_EXECUTOR_ID, SPARK_APP_ID_LABEL}
 
@@ -52,8 +51,11 @@ private[spark] class MountVolumesFeatureStep(conf: KubernetesConf)
     val duplicateMountPaths = volumeSpecs.map(_.mountPath).toSeq.groupBy(identity).collect {
       case (x, ys) if ys.length > 1 => s"'$x'"
     }
-    require(duplicateMountPaths.isEmpty,
-      s"Found duplicated mountPath: ${duplicateMountPaths.mkString(", ")}")
+    SparkException.require(
+      requirement = duplicateMountPaths.isEmpty,
+      errorClass = "K8S_CONFIG.VOLUMES_PREFIX_DUPLICATE",
+      messageParameters = Map("actual" -> duplicateMountPaths.mkString(", ")))
+
     volumeSpecs.zipWithIndex.map { case (spec, i) =>
       val volumeMount = new VolumeMountBuilder()
         .withMountPath(spec.mountPath)
