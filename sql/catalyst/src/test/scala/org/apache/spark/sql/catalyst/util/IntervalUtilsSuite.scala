@@ -819,4 +819,14 @@ class IntervalUtilsSuite extends SparkFunSuite with SQLHelper {
         input, s"second $second outside range [0, 59]", s => fromDayTimeString(s, from, to))
     }
   }
+
+  test("invalid parse second nanos should throw error") {
+    checkError(
+      exception = intercept[SparkIllegalArgumentException] {
+        IntervalUtils.parseSecondNano("12.02.30")
+      },
+      errorClass = "INVALID_FORMAT.SECOND_NANO",
+      parameters = Map("format" -> "ss.nnnnnnnnn")
+    )
+  }
 }

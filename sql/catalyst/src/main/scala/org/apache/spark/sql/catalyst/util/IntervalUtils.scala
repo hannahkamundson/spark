@@ -550,7 +550,7 @@ object IntervalUtils extends SparkIntervalUtils {
   /**
    * Parse second_nano string in ss.nnnnnnnnn format to microseconds
    */
-  private def parseSecondNano(
+  private[util] def parseSecondNano(
       secondNano: String,
       minSecond: Long = MIN_SECOND,
       maxSecond: Long = MAX_SECOND): Long = {
@@ -560,11 +560,14 @@ object IntervalUtils extends SparkIntervalUtils {
 
     secondNano.split("\\.") match {
       case Array(secondsStr) => parseSeconds(secondsStr)
-      case Array("", nanosStr) => parseNanos(nanosStr, false)
+      case Array("", nanosStr) => parseNanos(nanosStr, isNegative = false)
       case Array(secondsStr, nanosStr) =>
         val seconds = parseSeconds(secondsStr)
         Math.addExact(seconds, parseNanos(nanosStr, seconds < 0))
-      case _ => throw new SparkIllegalArgumentException("_LEGACY_ERROR_TEMP_3210")
+      case _ => throw new SparkIllegalArgumentException(
+        errorClass = "INVALID_FORMAT.SECOND_NANO",
+        messageParameters = Map("format" -> "ss.nnnnnnnnn")
+      )
     }
   }
 
