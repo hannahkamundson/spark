@@ -512,11 +512,11 @@ object IntervalUtils extends SparkIntervalUtils {
         case DT.SECOND =>
           // No-op
         case _ => throw new SparkIllegalArgumentException(
-          errorClass = "_LEGACY_ERROR_TEMP_3212",
+          errorClass = "INVALID_PARAMETER_VALUE.TIME_UNIT",
           messageParameters = Map(
-            "input" -> input,
-            "from" -> DT.fieldToString(from),
-            "to" -> DT.fieldToString(to)))
+            "parameter" -> "to",
+            "functionName" -> "parseDayTimeLegacy",
+          ))
       }
       var micros = secondsFraction
       micros = Math.addExact(micros, Math.multiplyExact(hours, MICROS_PER_HOUR))
@@ -524,6 +524,8 @@ object IntervalUtils extends SparkIntervalUtils {
       micros = Math.addExact(micros, Math.multiplyExact(seconds, MICROS_PER_SECOND))
       new CalendarInterval(0, sign * days, sign * micros)
     } catch {
+      // If we already had a custom exception, throw it
+      case e: SparkIllegalArgumentException => throw e
       case e: Exception =>
         throw new SparkIllegalArgumentException(
           errorClass = "_LEGACY_ERROR_TEMP_3211",

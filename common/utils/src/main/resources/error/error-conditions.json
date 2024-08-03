@@ -2638,6 +2638,11 @@
           "expects one of the <charsets>, but got <charset>."
         ]
       },
+      "TIME_UNIT" : {
+        "message" : [
+          "expects one of the following units: HOUR, MINUTE, SECOND."
+        ]
+      },
       "DATETIME_UNIT" : {
         "message" : [
           "expects one of the units without quotes YEAR, QUARTER, MONTH, WEEK, DAY, DAYOFYEAR, HOUR, MINUTE, SECOND, MILLISECOND, MICROSECOND, but got the string literal <invalidValue>."
@@ -8300,11 +8305,6 @@
   "_LEGACY_ERROR_TEMP_3211" : {
     "message" : [
       "Error parsing interval day-time string: <msg>"
-    ]
-  },
-  "_LEGACY_ERROR_TEMP_3212" : {
-    "message" : [
-      "Cannot support (interval '<input>' <from> to <to>) expression"
     ]
   },
   "_LEGACY_ERROR_TEMP_3213" : {

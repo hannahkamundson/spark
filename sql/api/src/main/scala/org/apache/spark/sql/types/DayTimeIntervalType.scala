@@ -72,7 +72,7 @@ case object DayTimeIntervalType extends AbstractDataType {
   val HOUR: Byte = 1
   val MINUTE: Byte = 2
   val SECOND: Byte = 3
-  val dayTimeFields = Seq(DAY, HOUR, MINUTE, SECOND)
+  val dayTimeFields: Seq[Byte] = Seq(DAY, HOUR, MINUTE, SECOND)
 
   def fieldToString(field: Byte): String = field match {
     case DAY => "day"
@@ -87,7 +87,7 @@ case object DayTimeIntervalType extends AbstractDataType {
 
   val stringToField: Map[String, Byte] = dayTimeFields.map(i => fieldToString(i) -> i).toMap
 
-  val DEFAULT = DayTimeIntervalType(DAY, SECOND)
+  val DEFAULT: DayTimeIntervalType = DayTimeIntervalType(DAY, SECOND)
 
   def apply(): DayTimeIntervalType = DEFAULT
   def apply(field: Byte): DayTimeIntervalType = DayTimeIntervalType(field, field)

@@ -19,7 +19,6 @@ package org.apache.spark.sql.catalyst.util
 
 import java.time.{Duration, Period}
 import java.util.concurrent.TimeUnit
-
 import org.apache.spark.{SparkFunSuite, SparkIllegalArgumentException}
 import org.apache.spark.sql.catalyst.plans.SQLHelper
 import org.apache.spark.sql.catalyst.util.DateTimeConstants._
@@ -28,6 +27,7 @@ import org.apache.spark.sql.catalyst.util.IntervalStringStyles.{ANSI_STYLE, HIVE
 import org.apache.spark.sql.catalyst.util.IntervalUtils._
 import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.types.DayTimeIntervalType
+import org.apache.spark.sql.types.DayTimeIntervalType.DAY
 import org.apache.spark.unsafe.types.{CalendarInterval, UTF8String}
 
 class IntervalUtilsSuite extends SparkFunSuite with SQLHelper {
@@ -338,6 +338,17 @@ class IntervalUtilsSuite extends SparkFunSuite with SQLHelper {
 
       failFuncWithInvalidInput("5 30:12:20", "hour 30 outside range", fromDayTimeString)
       failFuncWithInvalidInput("5 30-12", "must match day-time format", fromDayTimeString)
+
+      checkError(
+        exception = intercept[SparkIllegalArgumentException] {
+          fromDayTimeString("10 0:12:0.888", DAY, DAY)
+        },
+        errorClass = "INVALID_PARAMETER_VALUE.TIME_UNIT",
+        parameters = Map(
+          "parameter" -> "to",
+          "functionName" -> "parseDayTimeLegacy",
+        )
+      )
     }
   }
 
